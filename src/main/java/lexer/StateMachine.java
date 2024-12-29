@@ -19,6 +19,8 @@ class StateMachine {
       return Token.EOF;
     }
 
+    this.ignoreComment(source);
+
     var unexpected = this.checkUnexpected(source);
     if (unexpected.isPresent()) {
       return unexpected.get();
@@ -111,5 +113,18 @@ class StateMachine {
         }
       }
     }
+  }
+
+  private void ignoreComment(Source source) {
+    var startPosition = source.position();
+    var symbol1 = source.poll();
+    var symbol2 = source.poll();
+
+    if (symbol1 == '/' && symbol2 == '/') {
+      source.seek(new Cursor(startPosition.line + 1, 0));
+      return;
+    }
+
+    source.seek(startPosition);
   }
 }
