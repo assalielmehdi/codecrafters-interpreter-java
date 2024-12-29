@@ -32,6 +32,10 @@ class Source {
       return '\0';
     }
 
+    if (this.cursor.column >= this.lines.get(this.cursor.line).length()) {
+      return '\n';
+    }
+
     return this.lines.get(this.cursor.line).charAt(this.cursor.column);
   }
 
