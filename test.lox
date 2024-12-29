@@ -1,1 +1,10 @@
+// this is a comment
+(( )){} // grouping stuff
+!*+-/=<> <= == // operators
 
+"test string"
+"test on
+multiline    with random
+     space"
+
+"Unfinished string :/ :/

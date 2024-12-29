@@ -2,14 +2,34 @@ package lexer;
 
 
 public record Token(
-  TokenType type,
+  Type type,
   String lexeme,
   Object literal,
-  int line,
-  int column
+  int line
 ) {
+  public enum Type {
+    // Single-character tokens.
+    LEFT_PAREN, RIGHT_PAREN, LEFT_BRACE, RIGHT_BRACE,
+    COMMA, DOT, MINUS, PLUS, SEMICOLON, STAR, SLASH,
+
+    // One or two character tokens.
+    BANG, BANG_EQUAL,
+    EQUAL, EQUAL_EQUAL,
+    GREATER, GREATER_EQUAL,
+    LESS, LESS_EQUAL,
+
+    // Literals.
+    IDENTIFIER, STRING, NUMBER,
+
+    // Keywords.
+    AND, CLASS, ELSE, FALSE, FUN, FOR, IF, NIL, OR,
+    PRINT, RETURN, SUPER, THIS, TRUE, VAR, WHILE,
+
+    EOF
+  }
+
   // Position information are irrelevant for EOF token.
-  static Token EOF = new Token(EOFTokenType.EOF, EOFTokenType.EOF.lexeme(), null, -1, -1);
+  static Token EOF = new Token(Type.EOF, "", null, -1);
 
   @Override
   public String toString() {
