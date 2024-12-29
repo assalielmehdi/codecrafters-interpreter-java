@@ -15,15 +15,15 @@ class StateMachine {
 
   public Token parseLongest(Source source) {
     source.skipWhitespaces();
-    if (source.atEOF()) {
-      return Token.EOF;
-    }
-
     this.ignoreComment(source);
 
     var unexpected = this.checkUnexpected(source);
     if (unexpected.isPresent()) {
       return unexpected.get();
+    }
+
+    if (source.atEOF()) {
+      return Token.EOF;
     }
 
     var startPosition = source.position();
@@ -76,21 +76,6 @@ class StateMachine {
     return parsedToken;
   }
 
-  private Optional<Token> checkUnexpected(Source source) {
-    var symbol = source.peek();
-    var position = source.position();
-    if (!this.start.next.containsKey(symbol)) {
-      source.advance();
-      return Optional.of(new Token(
-        UnexpectedTokenType.UNEXPECTED_TOKEN_TYPE,
-        symbol + "",
-        null, position.line, position.column
-      ));
-    }
-
-    return Optional.empty();
-  }
-
   private void buildForFixedLengthTokenTypes() {
     for (var type : TokenType.FIXED_LENGTH_TOKEN_TYPES) {
       if (!type.isEnum()) {
@@ -115,7 +100,30 @@ class StateMachine {
     }
   }
 
+  private Optional<Token> checkUnexpected(Source source) {
+    if (source.atEOF()) {
+      return Optional.empty();
+    }
+
+    var symbol = source.peek();
+    var position = source.position();
+    if (!this.start.next.containsKey(symbol)) {
+      source.advance();
+      return Optional.of(new Token(
+        UnexpectedTokenType.UNEXPECTED_TOKEN_TYPE,
+        symbol + "",
+        null, position.line, position.column
+      ));
+    }
+
+    return Optional.empty();
+  }
+
   private void ignoreComment(Source source) {
+    if (source.atEOF()) {
+      return;
+    }
+
     var startPosition = source.position();
     var symbol1 = source.poll();
     var symbol2 = source.poll();
