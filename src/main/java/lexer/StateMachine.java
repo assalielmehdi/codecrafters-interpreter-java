@@ -18,6 +18,12 @@ class StateMachine {
     if (source.atEOF()) {
       return Token.EOF;
     }
+
+    var unexpected = this.checkUnexpected(source);
+    if (unexpected.isPresent()) {
+      return unexpected.get();
+    }
+
     var startPosition = source.position();
 
     var possibleTokens = new ArrayList<Token>();
@@ -55,11 +61,32 @@ class StateMachine {
 
     var parsedToken = possibleTokens.stream()
       .max(Comparator.comparingInt(token -> token.lexeme().length()))
-      .orElse(Token.EOF);
+      .orElseGet(() -> new Token(
+        UnexpectedTokenType.UNEXPECTED_TOKEN_TYPE,
+        "",
+        null,
+        startPosition.line,
+        startPosition.column
+      ));
     source.seek(startPosition);
     source.advance(parsedToken.lexeme().length());
 
     return parsedToken;
+  }
+
+  private Optional<Token> checkUnexpected(Source source) {
+    var symbol = source.peek();
+    var position = source.position();
+    if (!this.start.next.containsKey(symbol)) {
+      source.advance();
+      return Optional.of(new Token(
+        UnexpectedTokenType.UNEXPECTED_TOKEN_TYPE,
+        symbol + "",
+        null, position.line, position.column
+      ));
+    }
+
+    return Optional.empty();
   }
 
   private void buildForFixedLengthTokenTypes() {

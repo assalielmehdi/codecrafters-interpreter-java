@@ -2,7 +2,7 @@ package lexer;
 
 import java.util.Set;
 
-sealed interface TokenType permits OneCharTokenType, EOFTokenType {
+sealed interface TokenType permits OneCharTokenType, EOFTokenType, UnexpectedTokenType {
   Set<Class<? extends TokenType>> FIXED_LENGTH_TOKEN_TYPES = Set.of(OneCharTokenType.class);
 
   String type();
@@ -65,6 +65,38 @@ enum EOFTokenType implements TokenType {
   private final String lexeme;
 
   EOFTokenType(String type, String lexeme) {
+    this.type = type;
+    this.lexeme = lexeme;
+  }
+
+  @Override
+  public String type() {
+    return type;
+  }
+
+  @Override
+  public String lexeme() {
+    return lexeme;
+  }
+
+  @Override
+  public int length() {
+    return 0;
+  }
+
+  @Override
+  public String toString() {
+    return type;
+  }
+}
+
+enum UnexpectedTokenType implements TokenType {
+  UNEXPECTED_TOKEN_TYPE("UNEXPECTED_TOKEN_TYPE", "");
+
+  private final String type;
+  private final String lexeme;
+
+  UnexpectedTokenType(String type, String lexeme) {
     this.type = type;
     this.lexeme = lexeme;
   }
