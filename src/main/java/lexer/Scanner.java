@@ -54,6 +54,6 @@ public class Scanner {
   }
 
   private void reportError(Token token) {
-    this.errors.add(String.format("[line %d] Unexpected character: %s", token.line() + 1, token.lexeme()));
+    this.errors.add(String.format("[line %d] Error: Unexpected character: %s", token.line() + 1, token.lexeme()));
   }
 }
