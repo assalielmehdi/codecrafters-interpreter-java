@@ -25,6 +25,8 @@ public class Scanner {
       tokens.add(token);
     }
 
+    tokens.add(Token.EOF);
+
     return tokens;
   }
 
