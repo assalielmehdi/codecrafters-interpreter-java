@@ -2,13 +2,35 @@ package lexer;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class Scanner {
   private final String source;
   private int start, current;
   private int line = 1;
+  private static final Map<String, Token.Type> keywords = new HashMap<>();
+
+  static {
+    keywords.put("and", Token.Type.AND);
+    keywords.put("class", Token.Type.CLASS);
+    keywords.put("else", Token.Type.ELSE);
+    keywords.put("false", Token.Type.FALSE);
+    keywords.put("for", Token.Type.FOR);
+    keywords.put("fun", Token.Type.FUN);
+    keywords.put("if", Token.Type.IF);
+    keywords.put("nil", Token.Type.NIL);
+    keywords.put("or", Token.Type.OR);
+    keywords.put("print", Token.Type.PRINT);
+    keywords.put("return", Token.Type.RETURN);
+    keywords.put("super", Token.Type.SUPER);
+    keywords.put("this", Token.Type.THIS);
+    keywords.put("true", Token.Type.TRUE);
+    keywords.put("var", Token.Type.VAR);
+    keywords.put("while", Token.Type.WHILE);
+  }
 
   private final List<Token> tokens = new ArrayList<>();
   private final List<String> errors = new ArrayList<>();
@@ -112,7 +134,9 @@ public class Scanner {
           }
 
           var lexeme = source.substring(start, current);
-          this.tokens.add(new Token(Token.Type.IDENTIFIER, lexeme, null, line));
+          var type = keywords.getOrDefault(lexeme, Token.Type.IDENTIFIER);
+
+          this.tokens.add(new Token(type, lexeme, null, line));
           return;
         }
 
