@@ -100,7 +100,6 @@ public class Scanner {
 
         var lexeme = source.substring(start, current);
         this.tokens.add(new Token(Token.Type.NUMBER, lexeme, Double.parseDouble(lexeme), line));
-
       }
 
       case '\n' -> line++;
@@ -113,7 +112,7 @@ public class Scanner {
           }
 
           var lexeme = source.substring(start, current);
-          this.tokens.add(new Token(Token.Type.IDENTIFIER, lexeme, lexeme, line));
+          this.tokens.add(new Token(Token.Type.IDENTIFIER, lexeme, null, line));
           return;
         }
 
