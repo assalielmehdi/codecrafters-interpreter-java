@@ -109,6 +109,7 @@ public class Scanner {
         this.tokens.add(new Token(Token.Type.STRING, '"' + lexeme + '"', lexeme, line));
       }
 
+      case '0' -> this.tokens.add(new Token(Token.Type.NUMBER, "0", 0.0, line));
       case '1', '2', '3', '4', '5', '6', '7', '8', '9' -> {
         while (Character.isDigit(peek())) {
           poll();
