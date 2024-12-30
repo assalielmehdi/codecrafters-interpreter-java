@@ -1,43 +1,50 @@
 import lexer.Scanner;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+void main(String[] args) {
+  if (args.length < 2) {
+    System.err.println("Usage: ./your_program.sh <command> <filename>");
+    System.exit(64);
+  }
 
-public class Main {
-  public static void main(String[] args) {
-//    if (args.length < 2) {
-//      System.err.println("Usage: ./your_program.sh tokenize <filename>");
-//      System.exit(64);
-//    }
-//
-//    var command = args[0];
-//    var filename = args[1];
-//
-//    if (!command.equals("tokenize")) {
-//      System.err.println("Unknown command: " + command);
-//      System.exit(64);
-//    }
+  var command = args[0];
+  var filepath = args[1];
 
-    String fileContent = "";
-    try {
-      fileContent = Files.readString(Path.of("test.lox"));
-    } catch (IOException e) {
-      System.err.println("Error reading file: " + e.getMessage());
-      System.exit(65);
-    }
-
-    var scanner = new Scanner(fileContent);
-    scanner.scan();
-
-    var tokens = scanner.getTokens();
-    var errors = scanner.getErrors();
-
-    tokens.forEach(System.out::println);
-
-    if (!errors.isEmpty()) {
-      errors.forEach(System.err::println);
-      System.exit(65);
+  switch (command) {
+    case "tokenize" -> tokenize(filepath);
+    case "parse" -> scan(filepath);
+    default -> {
+      System.err.println("Unknown command: " + command);
+      System.exit(64);
     }
   }
+}
+
+String readFile(String filepath) {
+  var content = "";
+  try {
+    content = Files.readString(Path.of(filepath));
+  } catch (IOException e) {
+    System.err.println("Error reading file: " + e.getMessage());
+    System.exit(65);
+  }
+  return content;
+}
+
+void tokenize(String filepath) {
+  var scanner = new Scanner(readFile(filepath));
+  scanner.scan();
+
+  scanner.getTokens().forEach(System.out::println);
+
+  var errors = scanner.getErrors();
+  errors.forEach(System.err::println);
+
+  if (!errors.isEmpty()) {
+    errors.forEach(System.err::println);
+    System.exit(65);
+  }
+}
+
+void scan(String filepath) {
+  // TODO
 }
