@@ -107,7 +107,7 @@ public class Scanner {
 
       default -> {
         if (Character.isAlphabetic(symbol) || symbol == '_') {
-          while (Character.isAlphabetic(peek()) || peek() == '_') {
+          while (Character.isAlphabetic(peek()) || Character.isDigit(peek()) || peek() == '_') {
             poll();
           }
 
