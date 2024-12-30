@@ -71,21 +71,35 @@ public class Scanner {
         : new Token(Token.Type.GREATER, ">", null, line));
 
       case '"' -> {
-        var value = new StringBuilder();
         while (!atEOF() && peek() != '"') {
-          if (peek() == '\n') {
+          if (poll() == '\n') {
             line++;
           }
-
-          value.append(poll());
         }
 
-        if (peek() == '"') {
-          poll();
-          this.tokens.add(new Token(Token.Type.STRING, '"' + value.toString() + '"', value.toString(), line));
-        } else {
+        if (atEOF()) {
           this.errors.add(String.format("[line %d] Error: Unterminated string.", line));
+          return;
         }
+
+        poll();
+        var lexeme = source.substring(start + 1, current - 1);
+        this.tokens.add(new Token(Token.Type.STRING, '"' + lexeme + '"', lexeme, line));
+      }
+
+      case '1', '2', '3', '4', '5', '6', '7', '8', '9' -> {
+        while (Character.isDigit(peek())) {
+          poll();
+        }
+
+        if (peek() == '.' && Character.isDigit(peekNext())) {
+          do {
+            poll();
+          } while (Character.isDigit(peek()));
+        }
+
+        var lexeme = source.substring(start, current);
+        this.tokens.add(new Token(Token.Type.NUMBER, lexeme, Double.parseDouble(lexeme), line));
       }
 
       case '\n' -> line++;
@@ -101,6 +115,10 @@ public class Scanner {
 
   private char peek() {
     return atEOF() ? '\0' : source.charAt(current);
+  }
+
+  private char peekNext() {
+    return current + 1 >= source.length() ? '\0' : source.charAt(current + 1);
   }
 
   private char poll() {

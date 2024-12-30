@@ -2,6 +2,10 @@
 (( )){} // grouping stuff
 !*+-/=<> <= == // operators
 
+42
+1034
+1234.1234
+
 "test string"
 "test on
 multiline    with random
