@@ -105,7 +105,19 @@ public class Scanner {
       case '\n' -> line++;
       case ' ', '\t', '\r' -> {}
 
-      default -> this.errors.add(String.format("[line %d] Error: Unexpected character: %s", line, symbol));
+      default -> {
+        if (Character.isAlphabetic(symbol) || symbol == '_') {
+          while (Character.isAlphabetic(peek()) || peek() == '_') {
+            poll();
+          }
+
+          var lexeme = source.substring(start, current);
+          this.tokens.add(new Token(Token.Type.IDENTIFIER, lexeme, lexeme, line));
+          return;
+        }
+
+        this.errors.add(String.format("[line %d] Error: Unexpected character: %s", line, symbol));
+      }
     }
   }
 
