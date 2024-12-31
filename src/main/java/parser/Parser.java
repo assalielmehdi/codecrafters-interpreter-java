@@ -106,6 +106,7 @@ public class Parser {
           // TODO: ERROR
         }
 
+        poll();
         yield new Expr.Grouping(expr);
       }
       default -> throw new RuntimeException(); // TODO: Error
