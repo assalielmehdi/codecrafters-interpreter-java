@@ -45,9 +45,7 @@ public class Main {
 
     var errors = scanner.getErrors();
     errors.forEach(System.err::println);
-
     if (!errors.isEmpty()) {
-      errors.forEach(System.err::println);
       System.exit(65);
     }
   }
@@ -66,7 +64,6 @@ public class Main {
     var errors = parser.getErrors();
     errors.forEach(System.err::println);
     if (!errors.isEmpty()) {
-      errors.forEach(System.err::println);
       System.exit(65);
     }
   }
