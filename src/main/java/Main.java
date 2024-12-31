@@ -1,10 +1,12 @@
 import lexer.Scanner;
+import lexer.Token;
 import parser.AstPrinter;
 import parser.Parser;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
@@ -17,7 +19,7 @@ public class Main {
     var filepath = args[1];
 
     switch (command) {
-      case "tokenize" -> tokenize(filepath);
+      case "tokenize" -> tokenize(filepath).forEach(System.out::println);
       case "parse" -> scan(filepath);
       default -> {
         System.err.println("Unknown command: " + command);
@@ -37,24 +39,23 @@ public class Main {
     return content;
   }
 
-  static void tokenize(String filepath) {
+  static List<Token> tokenize(String filepath) {
     var scanner = new Scanner(readFile(filepath));
     scanner.scan();
-
-    scanner.getTokens().forEach(System.out::println);
 
     var errors = scanner.getErrors();
     errors.forEach(System.err::println);
     if (!errors.isEmpty()) {
       System.exit(65);
     }
+
+    return scanner.getTokens();
   }
 
   static void scan(String filepath) {
-    var scanner = new Scanner(readFile(filepath));
-    scanner.scan();
+    var tokens = tokenize(filepath);
 
-    var parser = new Parser(scanner.getTokens());
+    var parser = new Parser(tokens);
     parser.parse();
 
     var printer = new AstPrinter();
