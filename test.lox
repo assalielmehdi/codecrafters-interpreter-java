@@ -1,18 +1,1 @@
-// this is a comment
-(( )){} // grouping stuff
-!*+-/=<> <= == // operators
-
-42
-1034
-1234.1234
-
-and
-
-foo bar _hello
-
-"test string"
-"test on
-multiline    with random
-     space"
-
-"Unfinished string :/ :/
+1 + 2
