@@ -84,8 +84,9 @@ public class Parser {
 
   private Expr unary() {
     if (match(Token.Type.BANG, Token.Type.MINUS)) {
-      poll();
-      return unary();
+      var operator = poll();
+      var right = unary();
+      return new Expr.Unary(right, operator);
     }
 
     return primary();
