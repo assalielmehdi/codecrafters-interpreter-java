@@ -116,6 +116,7 @@ public class Parser {
   private void pollOrError(Token.Type type, String errorMessage) {
     if (match(type)) {
       poll();
+      return;
     }
 
     throw error(peek(), errorMessage);
