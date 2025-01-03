@@ -41,12 +41,12 @@ public class Main {
     var scanner = new Scanner(readFile(filepath));
     scanner.scan();
 
+    scanner.getTokens().forEach(System.out::println);
+
     if (!scanner.getErrors().isEmpty()) {
       scanner.getErrors().forEach(System.err::println);
       System.exit(65);
     }
-
-    scanner.getTokens().forEach(System.out::println);
   }
 
   static void scan(String filepath) {
