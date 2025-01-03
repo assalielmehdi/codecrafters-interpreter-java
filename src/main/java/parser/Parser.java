@@ -25,9 +25,9 @@ public class Parser {
   }
 
   public void parse() {
-    while (!atEOF()) {
+    try {
       expressions.add(expression());
-    }
+    } catch (RuntimeException ignored) {}
   }
 
   private Expr expression() {
@@ -103,15 +103,34 @@ public class Parser {
       case Token.Type.LEFT_PAREN -> {
         var expr = expression();
 
-        if (!match(Token.Type.RIGHT_PAREN)) {
-          // TODO: ERROR
-        }
+        pollOrError(Token.Type.RIGHT_PAREN, "Expect ')' after expression.");
 
-        poll();
         yield new Expr.Grouping(expr);
       }
-      default -> throw new RuntimeException(); // TODO: Error
+      default -> {
+        throw error(currentToken, "Expect expression.");
+      }
     };
+  }
+
+  private void pollOrError(Token.Type type, String errorMessage) {
+    if (match(type)) {
+      poll();
+    }
+
+    throw error(peek(), errorMessage);
+  }
+
+  private RuntimeException error(Token token, String errorMessage) {
+    var message = String.format(
+      "line[%d] Error at %s: %s",
+      token.line(),
+      token.type().equals(Token.Type.EOF) ? "end" : "'" + token.lexeme() + "'",
+      errorMessage
+    );
+    this.errors.add(message);
+
+    return new RuntimeException();
   }
 
   private boolean atEOF() {
@@ -120,6 +139,10 @@ public class Parser {
 
   private Token poll() {
     return tokens.get(current++);
+  }
+
+  private Token peek() {
+    return tokens.get(current);
   }
 
   private boolean match(Token.Type... types) {

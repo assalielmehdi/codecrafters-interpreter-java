@@ -43,11 +43,7 @@ public class Main {
     var scanner = new Scanner(readFile(filepath));
     scanner.scan();
 
-    var errors = scanner.getErrors();
-    errors.forEach(System.err::println);
-    if (!errors.isEmpty()) {
-      System.exit(65);
-    }
+    printErrors(scanner.getErrors());
 
     return scanner.getTokens();
   }
@@ -58,11 +54,13 @@ public class Main {
     var parser = new Parser(tokens);
     parser.parse();
 
+    printErrors(parser.getErrors());
+
     var printer = new AstPrinter();
-
     parser.getExpressions().forEach((expr) -> System.out.println(printer.print(expr)));
+  }
 
-    var errors = parser.getErrors();
+  static void printErrors(List<String> errors) {
     errors.forEach(System.err::println);
     if (!errors.isEmpty()) {
       System.exit(65);

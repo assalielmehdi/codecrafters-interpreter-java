@@ -28,9 +28,6 @@ public record Token(
     EOF
   }
 
-  // Position information are irrelevant for EOF token.
-  static Token EOF = new Token(Type.EOF, "", null, -1);
-
   @Override
   public String toString() {
     return String.format("%s %s %s", this.type, this.lexeme, this.literal);

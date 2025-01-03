@@ -51,7 +51,7 @@ public class Scanner {
       scanToken();
     }
 
-    tokens.add(Token.EOF);
+    tokens.add(new Token(Token.Type.EOF, "", null, line));
     this.alreadyScanned = true;
   }
 
