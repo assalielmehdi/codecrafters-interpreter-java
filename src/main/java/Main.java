@@ -43,6 +43,9 @@ public class Main {
     var scanner = new Scanner(readFile(filepath));
     scanner.scan();
 
+    var tokens = scanner.getTokens();
+    tokens.forEach(System.out::println);
+
     printErrors(scanner.getErrors());
 
     return scanner.getTokens();
