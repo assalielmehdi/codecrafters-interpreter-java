@@ -63,7 +63,7 @@ public class Main {
 
     parser.getExpressions().forEach((expr) -> System.out.println(AstPrinter.getInstance().print(expr)));
 
-    if (!scanner.getTokens().isEmpty()) {
+    if (!scanner.getErrors().isEmpty()) {
       scanner.getErrors().forEach(System.err::println);
       System.exit(65);
     }
