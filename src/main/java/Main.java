@@ -1,12 +1,10 @@
 import lexer.Scanner;
-import lexer.Token;
 import parser.AstPrinter;
 import parser.Parser;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
@@ -19,7 +17,7 @@ public class Main {
     var filepath = args[1];
 
     switch (command) {
-      case "tokenize" -> tokenize(filepath).forEach(System.out::println);
+      case "tokenize" -> tokenize(filepath);
       case "parse" -> scan(filepath);
       default -> {
         System.err.println("Unknown command: " + command);
@@ -39,33 +37,34 @@ public class Main {
     return content;
   }
 
-  static List<Token> tokenize(String filepath) {
+  static void tokenize(String filepath) {
     var scanner = new Scanner(readFile(filepath));
     scanner.scan();
 
-    var tokens = scanner.getTokens();
-    tokens.forEach(System.out::println);
+    if (!scanner.getErrors().isEmpty()) {
+      scanner.getErrors().forEach(System.err::println);
+      System.exit(65);
+    }
 
-    printErrors(scanner.getErrors());
-
-    return scanner.getTokens();
+    scanner.getTokens().forEach(System.out::println);
   }
 
   static void scan(String filepath) {
-    var tokens = tokenize(filepath);
+    var scanner = new Scanner(readFile(filepath));
+    scanner.scan();
 
-    var parser = new Parser(tokens);
+    var parser = new Parser(scanner.getTokens());
     parser.parse();
 
-    printErrors(parser.getErrors());
+    if (!parser.getErrors().isEmpty()) {
+        parser.getErrors().forEach(System.err::println);
+        System.exit(65);
+    }
 
-    var printer = new AstPrinter();
-    parser.getExpressions().forEach((expr) -> System.out.println(printer.print(expr)));
-  }
+    parser.getExpressions().forEach((expr) -> System.out.println(AstPrinter.getInstance().print(expr)));
 
-  static void printErrors(List<String> errors) {
-    errors.forEach(System.err::println);
-    if (!errors.isEmpty()) {
+    if (!scanner.getTokens().isEmpty()) {
+      scanner.getErrors().forEach(System.err::println);
       System.exit(65);
     }
   }

@@ -3,6 +3,18 @@ package parser;
 import java.util.Arrays;
 
 public class AstPrinter implements Visitor<String> {
+  private static AstPrinter instance;
+
+  private AstPrinter() {}
+
+  public static AstPrinter getInstance() {
+    if (instance == null) {
+      instance = new AstPrinter();
+    }
+
+    return instance;
+  }
+
   public String print(Expr expr) {
     return expr.accept(this);
   }
