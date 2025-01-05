@@ -1,5 +1,6 @@
 import lexer.Scanner;
 import parser.AstPrinter;
+import parser.Interpreter;
 import parser.Parser;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class Main {
     switch (command) {
       case "tokenize" -> tokenize(filepath);
       case "parse" -> scan(filepath);
+      case "evaluate" -> evaluate(filepath);
       default -> {
         System.err.println("Unknown command: " + command);
         System.exit(64);
@@ -62,6 +64,26 @@ public class Main {
     }
 
     parser.getExpressions().forEach((expr) -> System.out.println(AstPrinter.getInstance().print(expr)));
+
+    if (!scanner.getErrors().isEmpty()) {
+      scanner.getErrors().forEach(System.err::println);
+      System.exit(65);
+    }
+  }
+
+  private static void evaluate(String filepath) {
+    var scanner = new Scanner(readFile(filepath));
+    scanner.scan();
+
+    var parser = new Parser(scanner.getTokens());
+    parser.parse();
+
+    if (!parser.getErrors().isEmpty()) {
+      parser.getErrors().forEach(System.err::println);
+      System.exit(65);
+    }
+
+    parser.getExpressions().forEach((expr) -> System.out.println(Interpreter.getInstance().evaluate(expr)));
 
     if (!scanner.getErrors().isEmpty()) {
       scanner.getErrors().forEach(System.err::println);
