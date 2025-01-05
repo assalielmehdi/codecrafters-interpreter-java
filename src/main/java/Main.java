@@ -83,7 +83,10 @@ public class Main {
       System.exit(65);
     }
 
-    parser.getExpressions().forEach((expr) -> System.out.println(Interpreter.getInstance().evaluate(expr)));
+    parser.getExpressions().forEach((expr) -> {
+      var value = Interpreter.getInstance().evaluate(expr);
+      System.out.println(value == null ? "nil" : value);
+    });
 
     if (!scanner.getErrors().isEmpty()) {
       scanner.getErrors().forEach(System.err::println);
