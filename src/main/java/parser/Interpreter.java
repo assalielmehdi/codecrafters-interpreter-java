@@ -21,7 +21,34 @@ public class Interpreter implements Visitor<Object> {
 
   @Override
   public Object visitBinaryExpr(Expr.Binary expr) {
-    return null;
+    var leftValue = evaluate(expr.left());
+    var rightValue = evaluate(expr.right());
+
+    return switch (expr.operator().type()) {
+      case Token.Type.PLUS -> {
+        if (leftValue instanceof Double d1 && rightValue instanceof Double d2) {
+          yield d1 + d2;
+        }
+
+        if (leftValue instanceof String d1 && rightValue instanceof String d2) {
+          yield d1 + d2;
+        }
+
+        yield null;
+      }
+      case Token.Type.MINUS -> (double) leftValue - (double) rightValue;
+      case Token.Type.STAR -> (double) leftValue * (double) rightValue;
+      case Token.Type.SLASH -> (double) leftValue / (double) rightValue;
+      case Token.Type.EQUAL_EQUAL -> leftValue == rightValue;
+      case Token.Type.BANG_EQUAL -> leftValue != rightValue;
+      case Token.Type.LESS -> (double) leftValue < (double) rightValue;
+      case Token.Type.LESS_EQUAL -> (double) leftValue <= (double) rightValue;
+      case Token.Type.GREATER -> (double) leftValue > (double) rightValue;
+      case Token.Type.GREATER_EQUAL -> (double) leftValue >= (double) rightValue;
+      case Token.Type.AND -> isTruthy(leftValue) && isTruthy(rightValue);
+      case Token.Type.OR -> isTruthy(leftValue) || isTruthy(rightValue);
+      default -> null;
+    };
   }
 
   @Override
