@@ -83,14 +83,19 @@ public class Main {
       System.exit(65);
     }
 
-    parser.getExpressions().forEach((expr) -> {
-      var value = Interpreter.getInstance().evaluate(expr);
-      System.out.println(value == null ? "nil" : value);
-    });
+    parser.getExpressions().forEach((expr) -> System.out.println(print(Interpreter.getInstance().evaluate(expr))));
 
     if (!scanner.getErrors().isEmpty()) {
       scanner.getErrors().forEach(System.err::println);
       System.exit(65);
     }
+  }
+
+  private static Object print(Object value) {
+    return switch (value) {
+      case null -> "nil";
+      case Double dv when Math.floor(dv) == dv -> dv.longValue();
+      default -> value;
+    };
   }
 }

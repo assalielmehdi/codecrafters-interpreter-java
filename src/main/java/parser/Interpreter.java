@@ -58,11 +58,7 @@ public class Interpreter implements Visitor<Object> {
 
   @Override
   public Object visitLiteralExpr(Expr.Literal expr) {
-    return switch (expr.literal()) {
-      case Double d when Math.floor(d) == d -> d.longValue();
-      case null -> null;
-      default -> expr.literal();
-    };
+    return expr.literal();
   }
 
   @Override
