@@ -39,8 +39,8 @@ public class Interpreter implements Visitor<Object> {
       case Token.Type.MINUS -> (double) leftValue - (double) rightValue;
       case Token.Type.STAR -> (double) leftValue * (double) rightValue;
       case Token.Type.SLASH -> (double) leftValue / (double) rightValue;
-      case Token.Type.EQUAL_EQUAL -> leftValue == rightValue;
-      case Token.Type.BANG_EQUAL -> leftValue != rightValue;
+      case Token.Type.EQUAL_EQUAL -> equals(leftValue, rightValue);
+      case Token.Type.BANG_EQUAL -> !equals(leftValue, rightValue);
       case Token.Type.LESS -> (double) leftValue < (double) rightValue;
       case Token.Type.LESS_EQUAL -> (double) leftValue <= (double) rightValue;
       case Token.Type.GREATER -> (double) leftValue > (double) rightValue;
@@ -76,5 +76,17 @@ public class Interpreter implements Visitor<Object> {
       case null -> false;
       default -> true;
     };
+  }
+
+  private boolean equals(Object value1, Object value2) {
+    if (value1 == null && value2 == null) {
+      return true;
+    }
+
+    if (value1 == null) {
+      return false;
+    }
+
+    return value1.equals(value2);
   }
 }
