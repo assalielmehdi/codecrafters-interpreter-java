@@ -1,5 +1,6 @@
 import errors.Errors;
 import lexer.Scanner;
+import parser.AstPrinter;
 import parser.Interpreter;
 import parser.Parser;
 import parser.Stmt;
@@ -20,17 +21,20 @@ public class Main {
     var filepath = args[1];
 
     switch (command) {
-//    case "tokenize" -> {
-//      var scanner = new Scanner(readFile(filepath)).scan();
-//
-//      scanner.getTokens().forEach(System.out::println);
-//    }
-//    case "parse" -> {
-//      var scanner = new Scanner(readFile(filepath)).scan();
-//      var parser = new Parser(scanner.getTokens()).parse();
-//
-//      parser.getExpressions().forEach(expr -> System.out.println(AstPrinter.getInstance().print(expr)));
-//    }
+      case "tokenize" -> {
+        var scanner = new Scanner(readFile(filepath)).scan();
+
+        scanner.getTokens().forEach(System.out::println);
+      }
+      case "parse" -> {
+        var scanner = new Scanner(readFile(filepath)).scan();
+        var parser = new Parser(scanner.getTokens());
+        var expr = parser.parseExpr();
+
+        if (expr != null) {
+          System.out.println(AstPrinter.getInstance().print(expr));
+        }
+      }
       case "evaluate" -> {
         var scanner = new Scanner(readFile(filepath)).scan();
         var parser = new Parser(scanner.getTokens());
