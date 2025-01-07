@@ -2,10 +2,12 @@ import errors.Errors;
 import lexer.Scanner;
 import parser.Interpreter;
 import parser.Parser;
+import parser.Stmt;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
@@ -29,18 +31,15 @@ public class Main {
 //
 //      parser.getExpressions().forEach(expr -> System.out.println(AstPrinter.getInstance().print(expr)));
 //    }
-//    case "evaluate" -> {
-//      var scanner = new Scanner(readFile(filepath)).scan();
-//      var parser = new Parser(scanner.getTokens()).parse();
-//
-//      if (!Errors.hasErrors()) {
-//        parser.getExpressions().stream()
-//          .map(Interpreter.getInstance()::interpret)
-//          .filter(Optional::isPresent)
-//          .map(Optional::get)
-//          .forEach(System.out::println);
-//      }
-//    }
+      case "evaluate" -> {
+        var scanner = new Scanner(readFile(filepath)).scan();
+        var parser = new Parser(scanner.getTokens());
+        var expr = parser.parseExpr();
+
+        if (!Errors.hasErrors() && expr != null) {
+          Interpreter.getInstance().interpret(List.of(new Stmt.Print(expr)));
+        }
+      }
       case "run" -> {
         var scanner = new Scanner(readFile(filepath)).scan();
         var parser = new Parser(scanner.getTokens()).parse();

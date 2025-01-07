@@ -32,6 +32,14 @@ public class Parser {
     return this;
   }
 
+  public Expr parseExpr() {
+    try {
+      return expression();
+    } catch (RuntimeException ignored) {
+      return null;
+    }
+  }
+
   private Stmt stmt() {
     if (match(Token.Type.PRINT)) {
       return printStmt();
@@ -130,9 +138,7 @@ public class Parser {
 
         yield new Expr.Grouping(expr);
       }
-      default -> {
-        throw error(currentToken, "Expect expression.");
-      }
+      default -> throw error(currentToken, "Expect expression.");
     };
   }
 
