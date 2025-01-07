@@ -11,23 +11,46 @@ public class Parser {
   private final List<Token> tokens;
   private int current = 0;
 
-  private final List<Expr> expressions = new ArrayList<>();
+  private final List<Stmt> stmts = new ArrayList<>();
 
   public Parser(List<Token> tokens) {
     this.tokens = tokens;
   }
 
-  public List<Expr> getExpressions() {
-    return expressions;
+  public List<Stmt> getStmts() {
+    return stmts;
   }
 
   public Parser parse() {
     try {
-      expressions.add(expression());
+      while (!atEOF()) {
+        stmts.add(stmt());
+      }
     } catch (RuntimeException ignored) {
     }
 
     return this;
+  }
+
+  private Stmt stmt() {
+    if (match(Token.Type.PRINT)) {
+      return printStmt();
+    }
+
+    return expressionStmt();
+  }
+
+  private Stmt expressionStmt() {
+    var expr = expression();
+    pollOrError(Token.Type.SEMICOLON, "Expect ';' after expression.");
+    return new Stmt.Expression(expr);
+  }
+
+  private Stmt printStmt() {
+    poll();
+    var expr = expression();
+    pollOrError(Token.Type.SEMICOLON, "Expect ';' after expression.");
+    return new Stmt.Print(expr);
   }
 
   private Expr expression() {

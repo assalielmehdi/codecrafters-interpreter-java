@@ -4,9 +4,9 @@ import errors.Errors;
 import errors.RuntimeError;
 import lexer.Token;
 
-import java.util.Optional;
+import java.util.List;
 
-public class Interpreter implements Visitor<Object> {
+public class Interpreter implements Stmt.Visitor<Void>, Expr.Visitor<Object> {
   private static Interpreter instance;
 
   private Interpreter() {}
@@ -19,17 +19,25 @@ public class Interpreter implements Visitor<Object> {
     return instance;
   }
 
-  public Optional<String> interpret(Expr expr) {
+  public void interpret(List<Stmt> stmts) {
     try {
-      return Optional.of(stringify(evaluate(expr)));
+      stmts.forEach(stmt -> stmt.accept(this));
     } catch (RuntimeError error) {
       Errors.reportError(error);
-      return Optional.empty();
     }
   }
 
-  private Object evaluate(Expr expr) {
-    return expr.accept(this);
+  @Override
+  public Void visitExpressionStmt(Stmt.Expression stmt) {
+    evaluate(stmt.expr());
+    return null;
+  }
+
+  @Override
+  public Void visitPrintStmt(Stmt.Print stmt) {
+    var value = evaluate(stmt.expr());
+    System.out.println(stringify(value));
+    return null;
   }
 
   @Override
@@ -107,6 +115,10 @@ public class Interpreter implements Visitor<Object> {
       case Token.Type.BANG -> !isTruthy(rightValue);
       default -> null;
     };
+  }
+
+  private Object evaluate(Expr expr) {
+    return expr.accept(this);
   }
 
   private void checkNumbers(Token operator, Object... objects) {

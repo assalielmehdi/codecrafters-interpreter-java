@@ -2,7 +2,7 @@ package parser;
 
 import java.util.Arrays;
 
-public class AstPrinter implements Visitor<String> {
+public class AstPrinter implements Expr.Visitor<String> {
   private static AstPrinter instance;
 
   private AstPrinter() {}
