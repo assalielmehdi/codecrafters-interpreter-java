@@ -1,6 +1,9 @@
 package lexer;
 
 
+import errors.Errors;
+import errors.StaticError;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +36,6 @@ public class Scanner {
   }
 
   private final List<Token> tokens = new ArrayList<>();
-  private final List<String> errors = new ArrayList<>();
 
   private boolean alreadyScanned = false;
 
@@ -41,7 +43,7 @@ public class Scanner {
     this.source = source;
   }
 
-  public void scan() {
+  public Scanner scan() {
     if (this.alreadyScanned) {
       throw new IllegalStateException("An instance of Scanner can only be used to scan once.");
     }
@@ -53,6 +55,8 @@ public class Scanner {
 
     tokens.add(new Token(Token.Type.EOF, "", null, line));
     this.alreadyScanned = true;
+
+    return this;
   }
 
   private void scanToken() {
@@ -85,7 +89,7 @@ public class Scanner {
       case '\n' -> line++;
       case ' ', '\t', '\r' -> {}
       case char symbol when Character.isAlphabetic(symbol) || symbol == '_' -> parseIdentifier();
-      case char symbol -> this.errors.add(String.format("[line %d] Error: Unexpected character: %s", line, symbol));
+      case char symbol -> Errors.reportError(new StaticError(String.format("[line %d] Error: Unexpected character: %s", line, symbol)));
     }
   }
 
@@ -123,7 +127,7 @@ public class Scanner {
     }
 
     if (atEOF()) {
-      this.errors.add(String.format("[line %d] Error: Unterminated string.", line));
+      Errors.reportError(new StaticError(String.format("[line %d] Error: Unterminated string.", line)));
       return;
     }
 
@@ -168,9 +172,5 @@ public class Scanner {
 
   public List<Token> getTokens() {
     return tokens;
-  }
-
-  public List<String> getErrors() {
-    return errors;
   }
 }

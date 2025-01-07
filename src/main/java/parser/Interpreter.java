@@ -1,6 +1,10 @@
 package parser;
 
+import errors.Errors;
+import errors.RuntimeError;
 import lexer.Token;
+
+import java.util.Optional;
 
 public class Interpreter implements Visitor<Object> {
   private static Interpreter instance;
@@ -15,7 +19,16 @@ public class Interpreter implements Visitor<Object> {
     return instance;
   }
 
-  public Object evaluate(Expr expr) {
+  public Optional<Object> interpret(Expr expr) {
+    try {
+      return Optional.of(evaluate(expr));
+    } catch (RuntimeError error) {
+      Errors.reportError(error);
+      return Optional.empty();
+    }
+  }
+
+  private Object evaluate(Expr expr) {
     return expr.accept(this);
   }
 
@@ -34,17 +47,38 @@ public class Interpreter implements Visitor<Object> {
           yield d1 + d2;
         }
 
-        yield null;
+        throw new RuntimeError("Operands must be two numbers or two strings.", expr.operator());
       }
-      case Token.Type.MINUS -> (double) leftValue - (double) rightValue;
-      case Token.Type.STAR -> (double) leftValue * (double) rightValue;
-      case Token.Type.SLASH -> (double) leftValue / (double) rightValue;
+      case Token.Type.MINUS -> {
+        checkNumbers(expr.operator(), leftValue, rightValue);
+        yield (double) leftValue - (double) rightValue;
+      }
+      case Token.Type.STAR -> {
+        checkNumbers(expr.operator(), leftValue, rightValue);
+        yield (double) leftValue * (double) rightValue;
+      }
+      case Token.Type.SLASH -> {
+        checkNumbers(expr.operator(), leftValue, rightValue);
+        yield (double) leftValue / (double) rightValue;
+      }
       case Token.Type.EQUAL_EQUAL -> equals(leftValue, rightValue);
       case Token.Type.BANG_EQUAL -> !equals(leftValue, rightValue);
-      case Token.Type.LESS -> (double) leftValue < (double) rightValue;
-      case Token.Type.LESS_EQUAL -> (double) leftValue <= (double) rightValue;
-      case Token.Type.GREATER -> (double) leftValue > (double) rightValue;
-      case Token.Type.GREATER_EQUAL -> (double) leftValue >= (double) rightValue;
+      case Token.Type.LESS -> {
+        checkNumbers(expr.operator(), leftValue, rightValue);
+        yield (double) leftValue < (double) rightValue;
+      }
+      case Token.Type.LESS_EQUAL -> {
+        checkNumbers(expr.operator(), leftValue, rightValue);
+        yield (double) leftValue <= (double) rightValue;
+      }
+      case Token.Type.GREATER -> {
+        checkNumbers(expr.operator(), leftValue, rightValue);
+        yield (double) leftValue > (double) rightValue;
+      }
+      case Token.Type.GREATER_EQUAL -> {
+        checkNumbers(expr.operator(), leftValue, rightValue);
+        yield (double) leftValue >= (double) rightValue;
+      }
       case Token.Type.AND -> isTruthy(leftValue) && isTruthy(rightValue);
       case Token.Type.OR -> isTruthy(leftValue) || isTruthy(rightValue);
       default -> null;
@@ -63,11 +97,29 @@ public class Interpreter implements Visitor<Object> {
 
   @Override
   public Object visitUnaryExpr(Expr.Unary expr) {
+    var rightValue = evaluate(expr.right());
+
     return switch (expr.operator().type()) {
-      case Token.Type.MINUS -> -(double) evaluate(expr.right());
-      case Token.Type.BANG -> !isTruthy(evaluate(expr.right()));
+      case Token.Type.MINUS -> {
+        checkNumbers(expr.operator(), rightValue);
+        yield -(double) rightValue;
+      }
+      case Token.Type.BANG -> !isTruthy(rightValue);
       default -> null;
     };
+  }
+
+  private void checkNumbers(Token operator, Object... objects) {
+    for (Object o : objects) {
+      if (!(o instanceof Double)) {
+        throw new RuntimeError(String.format(
+          "Operand%s must be%s number%s.",
+          objects.length > 1 ? "s" : "",
+          objects.length > 1 ? " a" : "",
+          objects.length > 1 ? "s" : ""
+        ), operator);
+      }
+    }
   }
 
   private boolean isTruthy(Object value) {

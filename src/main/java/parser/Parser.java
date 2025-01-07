@@ -1,5 +1,7 @@
 package parser;
 
+import errors.Errors;
+import errors.StaticError;
 import lexer.Token;
 
 import java.util.ArrayList;
@@ -10,7 +12,6 @@ public class Parser {
   private int current = 0;
 
   private final List<Expr> expressions = new ArrayList<>();
-  private final List<String> errors = new ArrayList<>();
 
   public Parser(List<Token> tokens) {
     this.tokens = tokens;
@@ -20,14 +21,13 @@ public class Parser {
     return expressions;
   }
 
-  public List<String> getErrors() {
-    return errors;
-  }
-
-  public void parse() {
+  public Parser parse() {
     try {
       expressions.add(expression());
-    } catch (RuntimeException ignored) {}
+    } catch (RuntimeException ignored) {
+    }
+
+    return this;
   }
 
   private Expr expression() {
@@ -129,7 +129,7 @@ public class Parser {
       token.type().equals(Token.Type.EOF) ? "end" : "'" + token.lexeme() + "'",
       errorMessage
     );
-    this.errors.add(message);
+    Errors.reportError(new StaticError(message));
 
     return new RuntimeException();
   }
