@@ -3,7 +3,7 @@ package errors;
 import lexer.Token;
 
 public class RuntimeError extends RuntimeException implements Error {
-  private Token token;
+  private final Token token;
 
   public RuntimeError(String message, Token token) {
     super(message);

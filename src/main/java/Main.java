@@ -40,7 +40,7 @@ public class Main {
             .map(Interpreter.getInstance()::interpret)
             .filter(Optional::isPresent)
             .map(Optional::get)
-            .forEach((expr) -> System.out.println(print(expr)));
+            .forEach(System.out::println);
         }
       }
       default -> {
@@ -63,11 +63,5 @@ public class Main {
     return content;
   }
 
-  private static Object print(Object value) {
-    return switch (value) {
-      case null -> "nil";
-      case Double dv when Math.floor(dv) == dv -> dv.longValue();
-      default -> value;
-    };
-  }
+
 }

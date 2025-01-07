@@ -19,9 +19,9 @@ public class Interpreter implements Visitor<Object> {
     return instance;
   }
 
-  public Optional<Object> interpret(Expr expr) {
+  public Optional<String> interpret(Expr expr) {
     try {
-      return Optional.of(evaluate(expr));
+      return Optional.of(stringify(evaluate(expr)));
     } catch (RuntimeError error) {
       Errors.reportError(error);
       return Optional.empty();
@@ -140,5 +140,13 @@ public class Interpreter implements Visitor<Object> {
     }
 
     return value1.equals(value2);
+  }
+
+  private static String stringify(Object value) {
+    return switch (value) {
+      case null -> "nil";
+      case Double dv when Math.floor(dv) == dv -> dv.longValue() + "";
+      default -> value.toString();
+    };
   }
 }
